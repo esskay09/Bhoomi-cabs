@@ -3,13 +3,11 @@ package com.terranullius.bhoomicabs.network
 import androidx.lifecycle.LiveData
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.terranullius.bhoomicabs.data.GenerateOrderResponse
 import com.terranullius.bhoomicabs.network.ConfirmationRequest
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 private const val BASE_URL = "https://bhumi-cabs.herokuapp.com/"
 
@@ -45,6 +43,12 @@ interface PickCabApiService {
      fun startVerification(
         @Field("number") number: Long
     ) : LiveData<GenericApiResponse<ServerResponse>>
+
+     @GET("generateOrder")
+     @FormUrlEncoded
+     fun generateOrder(
+         @Field("amount") amount : Long
+     ) : LiveData<GenericApiResponse<GenerateOrderResponse>>
 }
 
 object PickCabApi {
