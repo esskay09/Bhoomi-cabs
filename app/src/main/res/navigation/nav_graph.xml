@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navGraph_auth">
+
+    <navigation android:id="@+id/navGraph_new_booking"
+        app:startDestination="@id/newBookingFragment">
+        <fragment
+            android:id="@+id/newBookingFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.NewBookingFragment"
+            android:label="NewBookingFragment">
+            <action
+                android:id="@+id/action_newBookingFragment_to_selectCarFragment"
+                app:destination="@id/selectCarFragment"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out" />
+        </fragment>
+        <fragment
+            android:id="@+id/selectCarFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.SelectCarFragment"
+            android:label="SelectCarFragment"
+            app:enterAnim="@anim/anim_slide_in"
+            app:exitAnim="@anim/anim_slide_out"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/anim_slide_in"
+            app:popExitAnim="@anim/anim_slide_out">
+            <action
+                android:id="@+id/action_selectCarFragment_to_selectPaymentFragment"
+                app:destination="@id/selectPaymentFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/selectPaymentFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.SelectPaymentFragment"
+            android:label="SelectPaymentFragment" >
+            <action
+                android:id="@+id/action_selectPaymentFragment_to_bookingFinishedFragment"
+                app:destination="@id/bookingFinishedFragment"
+                app:popUpTo="@id/selectPaymentFragment"
+                app:popUpToInclusive="true" />
+        </fragment>
+        <fragment
+            android:id="@+id/bookingFinishedFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.BookingFinishedFragment"
+            android:label="BookingFinishedFragment" >
+            <action
+                android:id="@+id/action_bookingFinishedFragment_to_navGraph_bookings"
+                app:destination="@id/navGraph_bookings"
+                app:popUpTo="@id/bookingFinishedFragment"
+                app:popUpToInclusive="true"
+                app:launchSingleTop="true" />
+        </fragment>
+    </navigation>
+    <navigation android:id="@+id/navGraph_auth"
+        app:startDestination="@id/splashFragment">
+        <fragment
+            android:id="@+id/splashFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.SplashFragment"
+            android:label="fragment_splash"
+            tools:layout="@layout/fragment_splash">
+            <action
+                android:id="@+id/action_splashFragment_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:popUpTo="@id/splashFragment"
+                app:popUpToInclusive="true" />
+            <action
+                android:id="@+id/action_splashFragment_to_bookingsFragment"
+                app:destination="@id/navGraph_bookings"
+                app:popUpTo="@id/splashFragment"
+                app:popUpToInclusive="true" />
+        </fragment>
+        <fragment
+            android:id="@+id/loginFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.auth.LoginFragment"
+            android:label="LoginFragment">
+            <action
+                android:id="@+id/action_loginFragment_to_OTPConfirmation"
+                app:destination="@id/OTPConfirmation"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out" />
+        </fragment>
+        <fragment
+            android:id="@+id/OTPConfirmation"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.auth.OTPConfirmation"
+            android:label="OTPConfirmation">
+            <action
+                android:id="@+id/action_OTPConfirmation_to_bookingsFragment"
+                app:destination="@id/navGraph_bookings"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out"
+                app:popUpTo="@id/OTPConfirmation"
+                app:popUpToInclusive="true" />
+            <action
+                android:id="@+id/action_OTPConfirmation_to_loginFragment"
+                app:destination="@id/loginFragment"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out" />
+        </fragment>
+    </navigation>
+    <navigation android:id="@+id/navGraph_bookings"
+        app:startDestination="@id/bookingsFragment">
+        <fragment
+            android:id="@+id/bookingsFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.bookings.BookingsFragment"
+            android:label="BookingsFragment">
+            <action
+                android:id="@+id/action_bookingsFragment_to_bookingDetailFragment"
+                app:destination="@id/bookingDetailFragment"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out" />
+            <action
+                android:id="@+id/action_bookingsFragment_to_newBookingFragment"
+                app:destination="@id/navGraph_new_booking"
+                app:enterAnim="@anim/anim_slide_in"
+                app:exitAnim="@anim/anim_slide_out"
+                app:launchSingleTop="true"
+                app:popEnterAnim="@anim/anim_slide_in"
+                app:popExitAnim="@anim/anim_slide_out" />
+        </fragment>
+        <fragment
+            android:id="@+id/bookingDetailFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.bookings.BookingDetailFragment"
+            android:label="BookingDetailFragment" />
+    </navigation>
+</navigation>

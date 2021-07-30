@@ -1,0 +1,121 @@
+package com.terranullius.bhoomicabs.ui
+
+import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.credentials.Credential
+import com.google.android.gms.auth.api.credentials.Credentials
+import com.google.android.gms.auth.api.credentials.HintRequest
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Status
+import com.terranullius.bhoomicabs.R
+import com.terranullius.bhoomicabs.other.Constants.CREDENTIAL__PHONE_PICKER_REQUEST
+import com.terranullius.bhoomicabs.ui.viewmodels.AuthViewModel
+import com.terranullius.bhoomicabs.util.EventObserver
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+
+
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+    private val viewModel: AuthViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main)
+        setObservers()
+
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        registerReceiver(smsVerificationReceiver, intentFilter, SmsRetriever.SEND_PERMISSION, null)
+    }
+
+    private fun setObservers(){
+
+        viewModel.showNumberChooser.observe(this, EventObserver {
+            requestHint()
+        })
+
+        viewModel.verificationStartedEvent.observe(this, EventObserver {
+            val client = SmsRetriever.getClient(this)
+            lifecycleScope.launch {
+                val task = client.startSmsRetriever()
+                task.addOnSuccessListener {
+                    Log.d("sha", "listening SMS")
+                }
+
+                task.addOnFailureListener {
+                    Log.d("sha", "sms retriever failed")
+                }
+            }
+        })
+
+    }
+
+
+
+    private fun requestHint() {
+        val hintRequest = HintRequest.Builder()
+            .setPhoneNumberIdentifierSupported(true) // this flag make sure that Selector get the phoneNumbers
+            .build()
+        val credentialsClient = Credentials.getClient(this)
+        val intent = credentialsClient.getHintPickerIntent(hintRequest)
+        startIntentSenderForResult(
+            intent.intentSender,
+            CREDENTIAL__PHONE_PICKER_REQUEST,
+            null, 0, 0, 0
+        )
+    }
+
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            CREDENTIAL__PHONE_PICKER_REQUEST ->
+                // Obtain the phone number from the result
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val credential = data.getParcelableExtra<Credential>(Credential.EXTRA_KEY)
+                    credential?.id;
+                    credential?.id?.let { viewModel.setNumber(processNumber(it)) } ?: return
+
+                    Log.d("sha", "credential: ${credential.id}")
+                }
+
+        }
+    }
+    private fun processNumber(id: String): Long {
+        var number = 0L
+        if (id.contains('+')){
+            number = id.substring(3).replace("-", "").replace(" ", "").toLongOrNull() ?: 0L
+        } else if (id.startsWith('0')){
+            number = id.substring(1).replace("-", "").replace(" ", "").toLongOrNull() ?: 0L
+        }
+        return number
+    }
+
+    private val smsVerificationReceiver = object : BroadcastReceiver() {
+          override fun onReceive(context: Context?, intent: Intent) {
+              if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
+                  val extras = intent.extras
+                  val status = extras!![SmsRetriever.EXTRA_STATUS] as Status?
+                  when (status!!.statusCode) {
+                      CommonStatusCodes.SUCCESS ->{
+                          val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String? //message from sms
+                          Log.d("sha", "SMS $message")
+                      }
+                      CommonStatusCodes.TIMEOUT -> {
+                      }
+                  }
+              }
+          }
+    }
+
+
+}
