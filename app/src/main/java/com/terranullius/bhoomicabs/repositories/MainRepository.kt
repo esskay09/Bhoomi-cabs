@@ -4,24 +4,31 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.terranullius.bhoomicabs.data.Booking
 import com.terranullius.bhoomicabs.data.Car
 import com.terranullius.bhoomicabs.data.*
+import com.terranullius.bhoomicabs.network.ApiEmptyResponse
+import com.terranullius.bhoomicabs.network.ApiErrorResponse
+import com.terranullius.bhoomicabs.network.ApiSuccessResponse
+import com.terranullius.bhoomicabs.network.PickCabApi
 import com.terranullius.bhoomicabs.other.Constants
 import com.terranullius.bhoomicabs.ui.viewmodels.BaseViewModel
 import com.terranullius.bhoomicabs.util.Event
+import com.terranullius.bhoomicabs.util.PaymentStatus
 import com.terranullius.bhoomicabs.util.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 
 class MainRepository {
 
     private val _phoneNumberStateFlow = MutableStateFlow(0L)
-    val phoneNumberStateFlow: MutableStateFlow<Long>
+    val phoneNumberStateFlow: StateFlow<Long>
         get() = _phoneNumberStateFlow
+
+    private val _paymentStatusStatusFLow = MutableStateFlow<PaymentStatus>(PaymentStatus.NONE)
+    val paymentStatusStatusFLow: StateFlow<PaymentStatus>
+    get() = _paymentStatusStatusFLow
+
 
     private var bookingList: List<Booking> = emptyList()
 
@@ -100,6 +107,38 @@ class MainRepository {
         awaitClose {
 
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun initiatePayment(amount: Long) {
+        callbackFlow<Resource<GenerateOrderResponse>> {
+            trySend(Resource.Loading)
+            PickCabApi.retrofitService.generateOrder(amount).observeForever{
+                when(it){
+                    is ApiSuccessResponse -> {
+                        if (it.body.result == Constants.SERVER_RES_ORDER_ERROR){
+                            trySend(Resource.Error(NullPointerException()))
+                        } else {
+                            trySend(Resource.Success(it.body))
+                        }
+                    }
+                    is ApiEmptyResponse -> {
+                        trySend(Resource.Error(NullPointerException()))
+                    }
+                    is ApiErrorResponse -> {
+                        trySend(Resource.Error(NullPointerException()))
+                    }
+                }
+            }
+            awaitClose{
+            }
+        }
+    }
+
+    suspend fun updateAndAwaitBookingOrderId(booking: Booking, orderId: String){
+        FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS).document(booking.id).update(
+            Constants.FS_FIELD_ORDER_ID, orderId
+        ).await()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -32,5 +32,10 @@ object Constants {
     const val FS_FIELD_TOTAL_AMOUNT = "totalAmount"
     const val FS_FIELD_PAID_AMOUNT = "paidAmount"
     const val FS_FIELD_CAR_ID = "carId"
+        const val FS_FIELD_ORDER_ID = "orderId"
+
+
+    const val SERVER_RES_ORDER_ERROR = "error"
+    const val SERVER_RES_ORDER_SUCCESS = "order created"
 
 }
