@@ -25,7 +25,7 @@ class MainRepository {
     val phoneNumberStateFlow: StateFlow<Long>
         get() = _phoneNumberStateFlow
 
-    private val _paymentStatusStatusFLow = MutableStateFlow<PaymentStatus>(PaymentStatus.NONE)
+    private val _paymentStatusStatusFLow = MutableStateFlow<PaymentStatus>(PaymentStatus.None)
     val paymentStatusStatusFLow: StateFlow<PaymentStatus>
     get() = _paymentStatusStatusFLow
 
@@ -109,9 +109,13 @@ class MainRepository {
         }
     }
 
+    fun setPaymentStatus(paymentStatus: PaymentStatus){
+        _paymentStatusStatusFLow.value = paymentStatus
+    }
+
     @ExperimentalCoroutinesApi
-    fun initiatePayment(amount: Long) {
-        callbackFlow<Resource<GenerateOrderResponse>> {
+    fun initiatePayment(amount: Long): Flow<Resource<GenerateOrderResponse>> {
+        return callbackFlow<Resource<GenerateOrderResponse>> {
             trySend(Resource.Loading)
             PickCabApi.retrofitService.generateOrder(amount).observeForever{
                 when(it){
@@ -135,10 +139,12 @@ class MainRepository {
         }
     }
 
-    suspend fun updateAndAwaitBookingOrderId(booking: Booking, orderId: String){
+    fun updateAndAwaitBookingOrderId(booking: Booking, orderId: String, onComplete: (Boolean) -> Unit){
         FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS).document(booking.id).update(
             Constants.FS_FIELD_ORDER_ID, orderId
-        ).await()
+        ).addOnCompleteListener {
+            onComplete(it.isSuccessful)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -1,5 +1,8 @@
 package com.terranullius.bhoomicabs.util
 
-enum class PaymentStatus {
-    STARTED, NEWBOOKING, NONE
+sealed class PaymentStatus {
+    object Started: PaymentStatus()
+    object NewBooking: PaymentStatus()
+    object None: PaymentStatus()
+    object Failed : PaymentStatus()
 }

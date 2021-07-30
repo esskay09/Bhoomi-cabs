@@ -9,11 +9,9 @@ import com.terranullius.bhoomicabs.other.Constants.PH_PICK_UP_TIME
 import com.terranullius.bhoomicabs.other.Constants.PH_START_CITY
 import com.terranullius.bhoomicabs.other.Constants.PH_START_DATE
 import com.terranullius.bhoomicabs.repositories.MainRepository
-import com.terranullius.bhoomicabs.util.DialogShowEvent
-import com.terranullius.bhoomicabs.util.Event
-import com.terranullius.bhoomicabs.util.PaymentType
-import com.terranullius.bhoomicabs.util.Resource
+import com.terranullius.bhoomicabs.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -182,6 +180,25 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
         viewModelScope.launch {
             repository.addBooking(booking).collect {
                 _bookingAddedEvent.value = it
+            }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    fun initiatePayment(amount: Long){
+        viewModelScope.launch {
+            repository.initiatePayment(amount).collect {
+                when(it){
+                    is Resource.Loading -> repository.setPaymentStatus(PaymentStatus.Started)
+                    is Resource.Error -> repository.setPaymentStatus(PaymentStatus.Failed)
+                    is Resource.Success -> {
+                        val orderId = it.data.orderID
+                        _currentBooking.value?.let { currentBooking ->
+                            repository.updateAndAwaitBookingOrderId(
+                                currentBooking, orderId)
+                        } ?: repository.setPaymentStatus(PaymentStatus.Failed)
+                    }
+                }
             }
         }
     }
