@@ -139,7 +139,7 @@ class MainRepository {
         }
     }
 
-    fun updateAndAwaitBookingOrderId(booking: Booking, orderId: String, onComplete: (Boolean) -> Unit){
+    fun updateBookingOrderId(booking: Booking, orderId: String, onComplete: (Boolean) -> Unit){
         FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS).document(booking.id).update(
             Constants.FS_FIELD_ORDER_ID, orderId
         ).addOnCompleteListener {

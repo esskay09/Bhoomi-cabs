@@ -5,4 +5,5 @@ sealed class PaymentStatus {
     object NewBooking: PaymentStatus()
     object None: PaymentStatus()
     object Failed : PaymentStatus()
+    data class InitiateCheckout(val amount: Long) : PaymentStatus()
 }
