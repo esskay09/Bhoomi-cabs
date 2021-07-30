@@ -17,7 +17,9 @@ import com.terranullius.bhoomicabs.ui.composables.theme.lightBlueHeadline
 import com.terranullius.bhoomicabs.ui.viewmodels.NewBookingViewModel
 import com.terranullius.bhoomicabs.util.NavigationEvent
 import com.terranullius.bhoomicabs.util.PaymentType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @Composable
 fun SelectPaymentScreen(modifier: Modifier = Modifier, viewModel: NewBookingViewModel) {
 
@@ -30,7 +32,7 @@ fun SelectPaymentScreen(modifier: Modifier = Modifier, viewModel: NewBookingView
             BottomAppBar() {
                 Button(
                     modifier = Modifier.fillMaxSize(), onClick = {
-                        viewModel.navigate(NavigationEvent.SelectPaymentToBookingFinished)
+                        viewModel.initiatePayment(totalAmount.value, viewModel.selectedPaymentType.value)
                     }) {
                     Text(text = "PAY")
                 }

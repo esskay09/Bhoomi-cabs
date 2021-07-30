@@ -125,7 +125,7 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
         val distance = (_distanceStateFlow.value as Resource.Success<Long>).data
         val totalAmount = getTotalAmount(car, distance)
 
-        _totalAmountStateFlow.value = totalAmount
+        setTotalAmount(totalAmount)
 
         setBooking(
             Booking(
@@ -185,7 +185,13 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
     }
 
     @ExperimentalCoroutinesApi
-    fun initiatePayment(amount: Long){
+    fun initiatePayment(totalAmount: Long, paymentType: PaymentType, otherAmount: Long = 0L){
+        val amount = when(paymentType){
+             PaymentType.QUARTER -> totalAmount / 4
+                PaymentType.FULL -> totalAmount
+            PaymentType.HALF -> totalAmount/2
+            PaymentType.OTHER -> otherAmount
+        }
         viewModelScope.launch {
             repository.initiatePayment(amount).collect {
                 when(it){
