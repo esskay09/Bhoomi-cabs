@@ -16,20 +16,34 @@ import com.google.android.gms.auth.api.credentials.HintRequest
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
+import com.razorpay.Checkout
 import com.terranullius.bhoomicabs.R
 import com.terranullius.bhoomicabs.other.Constants.CREDENTIAL__PHONE_PICKER_REQUEST
 import com.terranullius.bhoomicabs.ui.viewmodels.AuthViewModel
 import com.terranullius.bhoomicabs.util.EventObserver
+import com.terranullius.bhoomicabs.util.PaymentStatus
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.lang.Exception
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModels()
+    private lateinit var checkout: Checkout
+
+    private val TAG = this.javaClass.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        checkout = Checkout()
+
+        Checkout.preload(applicationContext)
+
+        checkout.setKeyID("rzp_test_l5ciOf0wh13GfR")
 
         setContentView(R.layout.activity_main)
         setObservers()
@@ -58,8 +72,40 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        lifecycleScope.launchWhenCreated {
+            viewModel.getPaymentStatus().collect {
+                when(it){
+                   is PaymentStatus.InitiateCheckout -> {
+                       initiateCheckout(it.amount, it.orderId)
+                   }
+                }
+            }
+        }
+
     }
 
+    private fun initiateCheckout(amount: Long, orderId: String) {
+
+        try {
+            val options = JSONObject()
+            options.put("name", "Esskay")
+            options.put("description", "Reference No. #123456")
+            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
+            options.put("order_id", orderId) //from response of step 3.
+            options.put("theme.color", "#3399cc")
+            options.put("currency", "INR")
+            options.put("amount", "${amount*100}") //pass amount in currency subunits
+            options.put("prefill.contact", "9334805466")
+            val retryObj = JSONObject()
+            retryObj.put("enabled", true)
+            retryObj.put("max_count", 4)
+            options.put("retry", retryObj)
+            checkout.open(this@MainActivity, options)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in starting Razorpay Checkout", e)
+        }
+
+    }
 
 
     private fun requestHint() {

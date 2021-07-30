@@ -104,5 +104,8 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
             }
         }
     }
+
+    fun getPaymentStatus() = repository.paymentStatusStatusFLow
+
 }
 

@@ -203,7 +203,7 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
                             repository.updateBookingOrderId(
                                 currentBooking, orderId, onComplete = { isSuccess ->
                                     if (isSuccess){
-                                        repository.setPaymentStatus(PaymentStatus.InitiateCheckout(amount))
+                                        repository.setPaymentStatus(PaymentStatus.InitiateCheckout(amount, orderId))
                                     } else {
                                         repository.setPaymentStatus(PaymentStatus.Failed)
                                     }
