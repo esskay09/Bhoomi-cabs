@@ -32,6 +32,8 @@ fun SelectPaymentScreen(modifier: Modifier = Modifier, viewModel: NewBookingView
             BottomAppBar() {
                 Button(
                     modifier = Modifier.fillMaxSize(), onClick = {
+                        viewModel.finishBooking()
+                        //TODO INITIATE ONLY IF FINISH BOOKING WAS SUCCESSFUL
                         viewModel.initiatePayment(totalAmount.value, viewModel.selectedPaymentType.value)
                     }) {
                     Text(text = "PAY")
