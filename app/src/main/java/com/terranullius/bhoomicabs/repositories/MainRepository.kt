@@ -107,7 +107,7 @@ class MainRepository {
                 if (it.isSuccessful) {
                     trySend(Event(Resource.Success(Unit)))
                 } else {
-                    trySend(Event(Resource.Error(NullPointerException())))
+                    trySend(Event(Resource.Error(NullPointerException(it.exception?.message))))
                 }
             }
         awaitClose {

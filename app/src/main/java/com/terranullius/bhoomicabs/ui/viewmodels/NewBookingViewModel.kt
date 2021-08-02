@@ -1,5 +1,6 @@
 package com.terranullius.bhoomicabs.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.terranullius.bhoomicabs.data.Booking
 import com.terranullius.bhoomicabs.data.Car
@@ -171,19 +172,20 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
             addBooking(it)
         }
 
-        viewModelScope.launch{
+        viewModelScope.launch {
             _bookingAddedEvent.collect {
-                when(val resource = it.getContentIfNotHandled()){
-                   is Resource.Success -> {
-                       initiatePayment(_totalAmountStateFlow.value, _selectedPaymentType.value)
-                   }
-                   is Resource.Error -> {
-                       repository.setPaymentStatus(PaymentStatus.Failed(resource.exception.message?: "Unknown Error: Adding booking"))
-                   }
-                   null -> {
-                       repository.setPaymentStatus(PaymentStatus.Failed("Unknown Error: Adding booking"))
-                   }
-               }
+                when (val resource = it.getContentIfNotHandled()) {
+                    is Resource.Success -> {
+                        initiatePayment(_totalAmountStateFlow.value, _selectedPaymentType.value)
+                    }
+                    is Resource.Error -> {
+                        repository.setPaymentStatus(
+                            PaymentStatus.Failed(
+                                resource.exception.message ?: "Unknown Error: Adding booking"
+                            )
+                        )
+                    }
+                }
             }
         }
     }
@@ -203,30 +205,41 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
     }
 
     @ExperimentalCoroutinesApi
-    fun initiatePayment(totalAmount: Long, paymentType: PaymentType, otherAmount: Long = 0L){
-        val amount = when(paymentType){
-             PaymentType.QUARTER -> totalAmount / 4
-                PaymentType.FULL -> totalAmount
-            PaymentType.HALF -> totalAmount/2
+    fun initiatePayment(totalAmount: Long, paymentType: PaymentType, otherAmount: Long = 0L) {
+        val amount = when (paymentType) {
+            PaymentType.QUARTER -> totalAmount / 4
+            PaymentType.FULL -> totalAmount
+            PaymentType.HALF -> totalAmount / 2
             PaymentType.OTHER -> otherAmount
         }
         viewModelScope.launch {
             repository.initiatePayment(amount).collect {
-                when(it){
+                Log.d("shit", "generateOrderResponse: $it")
+                when (it) {
                     is Resource.Loading -> repository.setPaymentStatus(PaymentStatus.Started)
-                    is Resource.Error -> repository.setPaymentStatus(PaymentStatus.Failed(it.exception.message ?: "Unknown Error"))
+                    is Resource.Error -> repository.setPaymentStatus(
+                        PaymentStatus.Failed(
+                            it.exception.message ?: "Unknown Error"
+                        )
+                    )
                     is Resource.Success -> {
                         val orderId = it.data.orderID
                         _currentBooking.value?.let { currentBooking ->
                             repository.updateBookingOrderId(
                                 currentBooking, orderId, onComplete = { isSuccess, errorMsg ->
-                                    if (isSuccess){
-                                        repository.setPaymentStatus(PaymentStatus.InitiateCheckout(amount, orderId))
+                                    if (isSuccess) {
+                                        repository.setPaymentStatus(
+                                            PaymentStatus.InitiateCheckout(
+                                                amount,
+                                                orderId
+                                            )
+                                        )
                                     } else {
-                                        repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id: $errorMsg" ))
+                                        repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id: $errorMsg"))
                                     }
                                 })
-                        } ?: repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id"))
+                        }
+                            ?: repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id"))
                     }
                 }
             }

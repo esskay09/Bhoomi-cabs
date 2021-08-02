@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: AuthViewModel by viewModels()
     private lateinit var checkout: Checkout
 
-    private val TAG = this.javaClass.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

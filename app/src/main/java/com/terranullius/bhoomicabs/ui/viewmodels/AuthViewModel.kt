@@ -79,10 +79,10 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
         _otpSetEvent.value = Event(Resource.Loading)
 
-   /*     //TODO REMOVE AND UNCOMMENT
-        _otpSetEvent.value = Event(Resource.Success(phoneNumberStateFlow.value))*/
+        //TODO REMOVE AND UNCOMMENT
+        _otpSetEvent.value = Event(Resource.Success(phoneNumberStateFlow.value))
 
-        PickCabApi.retrofitService.verifyOtp(phoneNumberStateFlow.value, otp).observeForever {
+  /*      PickCabApi.retrofitService.verifyOtp(phoneNumberStateFlow.value, otp).observeForever {
 
             when (it) {
                 is ApiSuccessResponse -> {
@@ -103,7 +103,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
                 }
 
             }
-        }
+        }*/
     }
 
     fun setPaymentStatus(paymentStatus: PaymentStatus){
