@@ -18,9 +18,11 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import com.razorpay.Checkout
+import com.razorpay.PaymentData
+import com.razorpay.PaymentResultWithDataListener
 import com.terranullius.bhoomicabs.R
 import com.terranullius.bhoomicabs.other.Constants.CREDENTIAL__PHONE_PICKER_REQUEST
-import com.terranullius.bhoomicabs.ui.viewmodels.AuthViewModel
+import com.terranullius.bhoomicabs.ui.viewmodels.MainViewModel
 import com.terranullius.bhoomicabs.util.EventObserver
 import com.terranullius.bhoomicabs.util.PaymentStatus
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,8 +33,8 @@ import java.lang.Exception
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-    private val viewModel: AuthViewModel by viewModels()
+class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var checkout: Checkout
 
 
@@ -54,11 +56,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObservers(){
 
-        viewModel.showNumberChooser.observe(this, EventObserver {
+        viewModel.getNumberChooserEvent().observe(this, EventObserver {
             requestHint()
         })
 
-        viewModel.verificationStartedEvent.observe(this, EventObserver {
+        viewModel.getVerificationStartedLiveData().observe(this, EventObserver {
             val client = SmsRetriever.getClient(this)
             lifecycleScope.launch {
                 val task = client.startSmsRetriever()
@@ -166,6 +168,17 @@ class MainActivity : AppCompatActivity() {
                   }
               }
           }
+    }
+
+    override fun onPaymentSuccess(razorpayPaymentId: String?, data: PaymentData?) {
+        data?.let { paymentData ->
+            val orderId = paymentData.orderId
+
+        }
+    }
+
+    override fun onPaymentError(errorCode: Int, response: String?, data: PaymentData?) {
+
     }
 
 

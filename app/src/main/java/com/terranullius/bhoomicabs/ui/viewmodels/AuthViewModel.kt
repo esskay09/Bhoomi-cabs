@@ -19,17 +19,11 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
     private val _phoneNumberSetEvent = MutableLiveData<Event<Resource<Long>>>()
 
-    private val _verificationStartedEvent = MutableLiveData<Event<Unit>>()
-    val verificationStartedEvent: LiveData<Event<Unit>>
-        get() = _verificationStartedEvent
 
     private val _otpSetEvent = MutableLiveData<Event<Resource<Long>>>()
     val otpSetEvent: LiveData<Event<Resource<Long>>>
         get() = _otpSetEvent
 
-    private val _showNumberChooser = MutableLiveData<Event<Unit>>()
-    val showNumberChooser: LiveData<Event<Unit>>
-        get() = _showNumberChooser
 
     init {
         viewModelScope.launch {
@@ -39,9 +33,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
         }
     }
 
-    fun showNumbersHint() {
-        _showNumberChooser.value = Event(Unit)
-    }
+
 
     fun setNumber(number: Long) {
         repository.setNumber(number)
@@ -49,7 +41,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
     fun startVerification(number: Long) {
 
-        _verificationStartedEvent.value = Event(Unit)
+        onVerificationStarted()
 
         //TODO UNCOMMENT AND REMOVE
         _phoneNumberSetEvent.value = Event(Resource.Success(number))
@@ -76,6 +68,10 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
             }
         }*/
 
+    }
+
+    private fun onVerificationStarted() {
+        repository.onVerificationStarted()
     }
 
     fun verifyOtp(otp: Int) {
@@ -109,11 +105,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
         }*/
     }
 
-    fun setPaymentStatus(paymentStatus: PaymentStatus){
-        repository.setPaymentStatus(paymentStatus)
-    }
 
-    fun getPaymentStatus() = repository.paymentStatusStatusFLow
 
 }
 

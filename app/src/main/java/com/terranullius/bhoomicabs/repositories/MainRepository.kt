@@ -1,5 +1,7 @@
 package com.terranullius.bhoomicabs.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.terranullius.bhoomicabs.data.Booking
@@ -26,6 +28,14 @@ class MainRepository {
     val phoneNumberStateFlow: StateFlow<Long>
         get() = _phoneNumberStateFlow
 
+    private val _showNumberChooser = MutableLiveData<Event<Unit>>()
+    val showNumberChooser: LiveData<Event<Unit>>
+        get() = _showNumberChooser
+
+    private val _verificationStartedEvent = MutableLiveData<Event<Unit>>()
+    val verificationStartedEvent: LiveData<Event<Unit>>
+        get() = _verificationStartedEvent
+
     private val _paymentStatusStatusFLow = MutableStateFlow<PaymentStatus>(PaymentStatus.None)
     val paymentStatusStatusFLow: StateFlow<PaymentStatus>
     get() = _paymentStatusStatusFLow
@@ -33,8 +43,16 @@ class MainRepository {
 
     private var bookingList: List<Booking> = emptyList()
 
+    fun showNumbersHint() {
+        _showNumberChooser.value = Event(Unit)
+    }
+
     fun setNumber(number: Long) {
         _phoneNumberStateFlow.value = number
+    }
+
+    fun onVerificationStarted(){
+        _verificationStartedEvent.value = Event(Unit)
     }
 
     fun getCarsFlow() = flow {
