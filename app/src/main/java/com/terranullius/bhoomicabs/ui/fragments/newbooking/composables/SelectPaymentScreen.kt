@@ -71,9 +71,7 @@ fun PaymentItem(
 @Composable
 fun PaymentSelectBox(modifier: Modifier = Modifier, viewModel: NewBookingViewModel, totalAmount: Long) {
 
-    var selectedPosition by remember {
-        mutableStateOf(0)
-    }
+    val selectedPositionState = viewModel.selectedPaymentType.collectAsState()
 
     Card(
         modifier = modifier
@@ -98,10 +96,9 @@ fun PaymentSelectBox(modifier: Modifier = Modifier, viewModel: NewBookingViewMod
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PaymentItem(
-                    isSelected = it.ordinal == selectedPosition,
+                    isSelected = it.ordinal == selectedPositionState.value.ordinal,
                     text = paymentDescription
                 ) {
-                    selectedPosition = it.ordinal
                     viewModel.setPaymentType(it)
                 }
             }

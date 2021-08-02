@@ -76,7 +76,7 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
         get() = _currentBooking
 
     private val _selectedPaymentType: MutableStateFlow<PaymentType> =
-        MutableStateFlow(PaymentType.OTHER)
+        MutableStateFlow(PaymentType.FULL)
     val selectedPaymentType: StateFlow<PaymentType>
         get() = _selectedPaymentType
 
@@ -212,6 +212,10 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
             PaymentType.HALF -> totalAmount / 2
             PaymentType.OTHER -> otherAmount
         }
+
+        Log.d("shit", "Amount: $amount")
+
+
         viewModelScope.launch {
             repository.initiatePayment(amount).collect {
                 Log.d("shit", "generateOrderResponse: $it")

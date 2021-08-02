@@ -51,9 +51,12 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
         _verificationStartedEvent.value = Event(Unit)
 
+        //TODO UNCOMMENT AND REMOVE
+        _phoneNumberSetEvent.value = Event(Resource.Success(number))
+
         setNumber(number)
 
-        PickCabApi.retrofitService.startVerification(number).observeForever {
+   /*     PickCabApi.retrofitService.startVerification(number).observeForever {
 
             Log.d("fuck", "start verification response : $it")
 
@@ -71,7 +74,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
                     _phoneNumberSetEvent.value = Event(Resource.Error(Exception()))
                 }
             }
-        }
+        }*/
 
     }
 

@@ -127,7 +127,7 @@ class MainRepository {
                 when(it){
                     is ApiSuccessResponse -> {
                         if (it.body.result == Constants.SERVER_RES_ORDER_ERROR){
-                            trySend(Resource.Error(NullPointerException()))
+                            trySend(Resource.Error(NullPointerException("Generate Order Api error")))
                         } else {
                             trySend(Resource.Success(it.body))
                         }
