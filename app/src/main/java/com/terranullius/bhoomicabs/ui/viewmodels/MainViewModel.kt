@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.terranullius.bhoomicabs.repositories.MainRepository
 import com.terranullius.bhoomicabs.util.Event
 import com.terranullius.bhoomicabs.util.PaymentStatus
+import com.terranullius.bhoomicabs.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -39,7 +40,18 @@ class MainViewModel @Inject constructor(val repository: MainRepository): BaseVie
     fun getPaymentStatus() = repository.paymentStatusStatusFLow
 
     fun updatePayment(orderId: String?, amount: String) {
-        repository.updatePayment(orderId, amount)
+        viewModelScope.launch {
+            repository.updatePayment(orderId, amount).collect {
+                when(it){
+                    is Resource.Success -> {
+                        repository.setPaymentStatus(PaymentStatus.Successful)
+                    }
+                    is Resource.Error -> {
+                        repository.setPaymentStatus(PaymentStatus.Failed(it.exception.message ?: "Payment error"))
+                    }
+                }
+            }
+        }
     }
 
 }

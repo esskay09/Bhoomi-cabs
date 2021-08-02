@@ -187,21 +187,21 @@ class MainRepository {
         emit(Resource.Success(1454L))
     }
 
-    fun updatePayment(orderId: String?, amount: String) {
+    fun updatePayment(orderId: String?, amount: String): Flow<Resource<Unit>> {
         val booking = bookingList.find {
             it.orderId == orderId
+        } ?: return flow {
+            emit(Resource.Error(NullPointerException("Error updating payment. Found no booking with orderId $orderId")))
         }
 
-        //TODO CASE WHEN BOOKINGDTO IS NULL
+       return booking.let {
+           var paidAmount = it.paidAmount
+           paidAmount += amount.toLong()
 
-        booking?.let {
-            var paidAmount = it.paidAmount
-            paidAmount += amount.toLong()
+           booking.paidAmount = paidAmount
 
-            booking.paidAmount = paidAmount
-
-            updateBooking(booking)
-        }
+           return@let updateBooking(booking)
+       }
 
     }
 }

@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.HintRequest
@@ -36,6 +39,7 @@ import java.lang.Exception
 class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var checkout: Checkout
+    private lateinit var navController: NavController
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +53,9 @@ class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
 
         setContentView(R.layout.activity_main)
         setObservers()
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         registerReceiver(smsVerificationReceiver, intentFilter, SmsRetriever.SEND_PERMISSION, null)
@@ -83,10 +90,17 @@ class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
                     is PaymentStatus.Failed ->{
                         Toast.makeText(this@MainActivity, it.errorMessage, Toast.LENGTH_LONG).show()
                     }
+                    is PaymentStatus.Successful -> {
+                        onPaymentSuccessful()
+                    }
                 }
             }
         }
 
+    }
+
+    private fun onPaymentSuccessful() {
+        navController.navigate(R.id.action_global_bookingFinishedFragment)
     }
 
     private fun initiateCheckout(amount: Long, orderId: String) {
@@ -182,7 +196,7 @@ class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
     }
 
     override fun onPaymentError(errorCode: Int, response: String?, data: PaymentData?) {
-
+        viewModel.setPaymentStatus(PaymentStatus.Failed(response ?: "Payment error"))
     }
 
 

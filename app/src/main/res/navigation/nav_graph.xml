@@ -36,24 +36,7 @@
         <fragment
             android:id="@+id/selectPaymentFragment"
             android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.SelectPaymentFragment"
-            android:label="SelectPaymentFragment" >
-            <action
-                android:id="@+id/action_selectPaymentFragment_to_bookingFinishedFragment"
-                app:destination="@id/bookingFinishedFragment"
-                app:popUpTo="@id/selectPaymentFragment"
-                app:popUpToInclusive="true" />
-        </fragment>
-        <fragment
-            android:id="@+id/bookingFinishedFragment"
-            android:name="com.terranullius.bhoomicabs.ui.fragments.paymentfinished.BookingFinishedFragment"
-            android:label="BookingFinishedFragment" >
-            <action
-                android:id="@+id/action_bookingFinishedFragment_to_navGraph_bookings"
-                app:destination="@id/navGraph_bookings"
-                app:popUpTo="@id/bookingFinishedFragment"
-                app:popUpToInclusive="true"
-                app:launchSingleTop="true" />
-        </fragment>
+            android:label="SelectPaymentFragment" />
     </navigation>
     <navigation android:id="@+id/navGraph_auth"
         app:startDestination="@id/splashFragment">
@@ -138,4 +121,24 @@
             android:name="com.terranullius.bhoomicabs.ui.fragments.bookings.BookingDetailFragment"
             android:label="BookingDetailFragment" />
     </navigation>
+    <fragment
+        android:id="@+id/bookingFinishedFragment"
+        android:name="com.terranullius.bhoomicabs.ui.fragments.paymentfinished.BookingFinishedFragment"
+        android:label="BookingFinishedFragment" >
+        <action
+            android:id="@+id/action_bookingFinishedFragment_to_navGraph_bookings"
+            app:destination="@id/navGraph_bookings"
+            app:enterAnim="@anim/anim_slide_in"
+            app:exitAnim="@anim/anim_slide_out"
+            app:popEnterAnim="@anim/anim_slide_in"
+            app:popExitAnim="@anim/anim_slide_out"
+            app:popUpTo="@id/bookingFinishedFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_bookingFinishedFragment"
+        app:destination="@id/bookingFinishedFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true"
+        app:launchSingleTop="true" />
 </navigation>
