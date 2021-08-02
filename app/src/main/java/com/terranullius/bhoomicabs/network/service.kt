@@ -44,7 +44,7 @@ interface PickCabApiService {
         @Field("number") number: Long
     ) : LiveData<GenericApiResponse<ServerResponse>>
 
-     @GET("generateOrder")
+     @POST("generateOrder")
      @FormUrlEncoded
      fun generateOrder(
          @Field("amount") amount : Long

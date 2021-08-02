@@ -79,6 +79,17 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
     val selectedPaymentType: StateFlow<PaymentType>
         get() = _selectedPaymentType
 
+
+    private val _showDialogEvent: MutableStateFlow<Event<DialogShowEvent>> =
+        MutableStateFlow(Event(DialogShowEvent.None))
+    val showDialogEvent: StateFlow<Event<DialogShowEvent>>
+        get() = _showDialogEvent
+
+    private val _bookingAddedEvent: MutableStateFlow<Event<Resource<Unit>>> =
+        MutableStateFlow(Event(Resource.Loading))
+    val bookingAddedEvent: StateFlow<Event<Resource<Unit>>>
+        get() = _bookingAddedEvent
+
     fun setStartCity(city: String) {
         _startCity.value = city
     }
@@ -154,21 +165,28 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
         _currentBooking.value = booking
     }
 
+    @ExperimentalCoroutinesApi
     fun finishBooking() {
         _currentBooking.value?.let {
             addBooking(it)
         }
+
+        viewModelScope.launch{
+            _bookingAddedEvent.collect {
+               when(it.getContentIfNotHandled()){
+                   is Resource.Success -> {
+                       initiatePayment(_totalAmountStateFlow.value, _selectedPaymentType.value)
+                   }
+                   is Resource.Error -> {
+                       repository.setPaymentStatus(PaymentStatus.Failed)
+                   }
+                   null -> {
+                       repository.setPaymentStatus(PaymentStatus.Failed)
+                   }
+               }
+            }
+        }
     }
-
-    private val _showDialogEvent: MutableStateFlow<Event<DialogShowEvent>> =
-        MutableStateFlow(Event(DialogShowEvent.None))
-    val showDialogEvent: StateFlow<Event<DialogShowEvent>>
-        get() = _showDialogEvent
-
-    private val _bookingAddedEvent: MutableStateFlow<Event<Resource<Unit>>> =
-        MutableStateFlow(Event(Resource.Loading))
-    val bookingAddedEvent: StateFlow<Event<Resource<Unit>>>
-        get() = _bookingAddedEvent
 
     fun showDialog(dialogShowEvent: DialogShowEvent) {
         viewModelScope.launch {
