@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -78,6 +79,9 @@ class MainActivity : AppCompatActivity() {
                    is PaymentStatus.InitiateCheckout -> {
                        initiateCheckout(it.amount, it.orderId)
                    }
+                    is PaymentStatus.Failed ->{
+                        Toast.makeText(this@MainActivity, it.errorMessage, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -102,7 +106,9 @@ class MainActivity : AppCompatActivity() {
             options.put("retry", retryObj)
             checkout.open(this@MainActivity, options)
         } catch (e: Exception) {
-            Log.e(TAG, "Error in starting Razorpay Checkout", e)
+            viewModel.setPaymentStatus(
+                PaymentStatus.Failed("Error starting razorpay checkout: ${e.message}")
+            )
         }
 
     }
@@ -131,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                     credential?.id;
                     credential?.id?.let { viewModel.setNumber(processNumber(it)) } ?: return
 
-                    Log.d("sha", "credential: ${credential.id}")
+                    Log.d("fuck", "credential: ${credential.id}")
                 }
 
         }
@@ -154,7 +160,7 @@ class MainActivity : AppCompatActivity() {
                   when (status!!.statusCode) {
                       CommonStatusCodes.SUCCESS ->{
                           val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String? //message from sms
-                          Log.d("sha", "SMS $message")
+                          Log.d("fuck", "SMS $message")
                       }
                       CommonStatusCodes.TIMEOUT -> {
                       }

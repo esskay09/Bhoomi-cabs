@@ -1,6 +1,7 @@
 package com.terranullius.bhoomicabs.repositories
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.terranullius.bhoomicabs.data.Booking
 import com.terranullius.bhoomicabs.data.Car
 import com.terranullius.bhoomicabs.data.*
@@ -38,14 +39,18 @@ class MainRepository {
 
     fun getCarsFlow() = flow {
         emit(Resource.Loading)
-        val cars =
-            FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_CARS_COLLECTION)
-                .get()
-                .await()
-                .toObjects(CarDto::class.java).map {
-                    it.toCar()
-                }
-        emit(Resource.Success(cars))
+        try{
+            val cars =
+                FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_CARS_COLLECTION)
+                    .get()
+                    .await()
+                    .toObjects(CarDto::class.java).map {
+                        it.toCar()
+                    }
+            emit(Resource.Success(cars))
+        } catch(e: Exception){
+            emit(Resource.Error(e))
+        }
     }
 
 
@@ -96,7 +101,8 @@ class MainRepository {
         trySend(Event(Resource.Loading))
         val bookingDto = booking.toBookingDto(BaseViewModel.phoneNumberStateFlow.value.toString())
         FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS)
-            .add(bookingDto)
+            .document(booking.id)
+            .set(bookingDto)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     trySend(Event(Resource.Success(Unit)))
@@ -127,10 +133,10 @@ class MainRepository {
                         }
                     }
                     is ApiEmptyResponse -> {
-                        trySend(Resource.Error(NullPointerException()))
+                        trySend(Resource.Error(NullPointerException("Empty Response Generate Order")))
                     }
                     is ApiErrorResponse -> {
-                        trySend(Resource.Error(NullPointerException()))
+                        trySend(Resource.Error(NullPointerException(it.errorMessage)))
                     }
                 }
             }
@@ -139,11 +145,15 @@ class MainRepository {
         }
     }
 
-    fun updateBookingOrderId(booking: Booking, orderId: String, onComplete: (Boolean) -> Unit){
+    fun updateBookingOrderId(booking: Booking, orderId: String, onComplete: (Boolean, errorMsg: String) -> Unit){
         FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS).document(booking.id).update(
             Constants.FS_FIELD_ORDER_ID, orderId
         ).addOnCompleteListener {
-            onComplete(it.isSuccessful)
+            if (it.isSuccessful){
+                onComplete(true, "none")
+            } else{
+                onComplete(false, it.exception?.message?: "Unknown error updating booking order id")
+            }
         }
     }
 

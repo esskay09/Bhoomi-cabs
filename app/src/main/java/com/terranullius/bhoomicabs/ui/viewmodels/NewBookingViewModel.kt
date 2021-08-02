@@ -123,7 +123,7 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
         }
     }
 
-    fun setTotalAmount(amount: Long) {
+    private fun setTotalAmount(amount: Long) {
         _totalAmountStateFlow.value = amount
     }
 
@@ -173,15 +173,15 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
 
         viewModelScope.launch{
             _bookingAddedEvent.collect {
-               when(it.getContentIfNotHandled()){
+                when(val resource = it.getContentIfNotHandled()){
                    is Resource.Success -> {
                        initiatePayment(_totalAmountStateFlow.value, _selectedPaymentType.value)
                    }
                    is Resource.Error -> {
-                       repository.setPaymentStatus(PaymentStatus.Failed)
+                       repository.setPaymentStatus(PaymentStatus.Failed(resource.exception.message?: "Unknown Error: Adding booking"))
                    }
                    null -> {
-                       repository.setPaymentStatus(PaymentStatus.Failed)
+                       repository.setPaymentStatus(PaymentStatus.Failed("Unknown Error: Adding booking"))
                    }
                }
             }
@@ -214,19 +214,19 @@ class NewBookingViewModel @Inject constructor(val repository: MainRepository) : 
             repository.initiatePayment(amount).collect {
                 when(it){
                     is Resource.Loading -> repository.setPaymentStatus(PaymentStatus.Started)
-                    is Resource.Error -> repository.setPaymentStatus(PaymentStatus.Failed)
+                    is Resource.Error -> repository.setPaymentStatus(PaymentStatus.Failed(it.exception.message ?: "Unknown Error"))
                     is Resource.Success -> {
                         val orderId = it.data.orderID
                         _currentBooking.value?.let { currentBooking ->
                             repository.updateBookingOrderId(
-                                currentBooking, orderId, onComplete = { isSuccess ->
+                                currentBooking, orderId, onComplete = { isSuccess, errorMsg ->
                                     if (isSuccess){
                                         repository.setPaymentStatus(PaymentStatus.InitiateCheckout(amount, orderId))
                                     } else {
-                                        repository.setPaymentStatus(PaymentStatus.Failed)
+                                        repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id: $errorMsg" ))
                                     }
                                 })
-                        } ?: repository.setPaymentStatus(PaymentStatus.Failed)
+                        } ?: repository.setPaymentStatus(PaymentStatus.Failed("Error Updating booking's order Id"))
                     }
                 }
             }

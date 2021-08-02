@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.terranullius.bhoomicabs.network.*
 import com.terranullius.bhoomicabs.repositories.MainRepository
 import com.terranullius.bhoomicabs.util.Event
+import com.terranullius.bhoomicabs.util.PaymentStatus
 import com.terranullius.bhoomicabs.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -103,6 +104,10 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
             }
         }
+    }
+
+    fun setPaymentStatus(paymentStatus: PaymentStatus){
+        repository.setPaymentStatus(paymentStatus)
     }
 
     fun getPaymentStatus() = repository.paymentStatusStatusFLow
