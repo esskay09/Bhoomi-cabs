@@ -1,6 +1,5 @@
 package com.terranullius.bhoomicabs.data
 
-//TODO ADD BOOKING ID
 data class BookingDto(
     val id: String = "unassigned",
     val userId: String = "",
@@ -13,7 +12,8 @@ data class BookingDto(
     val endDate: String = "",
     val totalAmount: Long = 0L,
     val paidAmount: Long = 0L,
-    val carId: String = ""
+    val carId: String = "",
+    val orderId: String = ""
 )
 
 

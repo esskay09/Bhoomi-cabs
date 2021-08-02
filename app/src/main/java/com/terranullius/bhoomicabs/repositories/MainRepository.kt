@@ -117,7 +117,7 @@ class MainRepository {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun addBooking(booking: Booking) = callbackFlow<Event<Resource<Unit>>> {
         trySend(Event(Resource.Loading))
-        val bookingDto = booking.toBookingDto(BaseViewModel.phoneNumberStateFlow.value.toString())
+        val bookingDto = booking.toBookingDto(phoneNumberStateFlow.value.toString())
         FirebaseFirestore.getInstance().collection(Constants.FIRESTORE_COLLECTION_BOOKINGS)
             .document(booking.id)
             .set(bookingDto)
@@ -185,5 +185,23 @@ class MainRepository {
         delay(3000L)
 
         emit(Resource.Success(1454L))
+    }
+
+    fun updatePayment(orderId: String?, amount: String) {
+        val booking = bookingList.find {
+            it.orderId == orderId
+        }
+
+        //TODO CASE WHEN BOOKINGDTO IS NULL
+
+        booking?.let {
+            var paidAmount = it.paidAmount
+            paidAmount += amount.toLong()
+
+            booking.paidAmount = paidAmount
+
+            updateBooking(booking)
+        }
+
     }
 }

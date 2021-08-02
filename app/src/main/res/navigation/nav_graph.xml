@@ -45,7 +45,7 @@
         </fragment>
         <fragment
             android:id="@+id/bookingFinishedFragment"
-            android:name="com.terranullius.bhoomicabs.ui.fragments.newbooking.BookingFinishedFragment"
+            android:name="com.terranullius.bhoomicabs.ui.fragments.paymentfinished.BookingFinishedFragment"
             android:label="BookingFinishedFragment" >
             <action
                 android:id="@+id/action_bookingFinishedFragment_to_navGraph_bookings"

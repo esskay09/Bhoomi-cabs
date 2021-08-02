@@ -38,4 +38,8 @@ class MainViewModel @Inject constructor(val repository: MainRepository): BaseVie
 
     fun getPaymentStatus() = repository.paymentStatusStatusFLow
 
+    fun updatePayment(orderId: String?, amount: String) {
+        repository.updatePayment(orderId, amount)
+    }
+
 }

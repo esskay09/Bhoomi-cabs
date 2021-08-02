@@ -6,6 +6,7 @@ import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_DISTANCE
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_END_CITY
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_END_DATE
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_ONE_WAY
+import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_ORDER_ID
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_PAID_AMOUNT
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_PICKUP_TIME
 import com.terranullius.bhoomicabs.other.Constants.FS_FIELD_START_CITY
@@ -40,7 +41,8 @@ fun BookingDto.toBooking(cars: List<Car>): Booking {
         pickupTime = pickupTime,
         totalAmount = totalAmount,
         paidAmount = paidAmount,
-        car = car
+        car = car,
+        orderId = orderId
     )
 }
 
@@ -56,7 +58,8 @@ fun Booking.toBookingDto(userId: String) = BookingDto(
     oneWay = oneWay,
     totalAmount = totalAmount,
     paidAmount = paidAmount,
-    carId = car.id
+    carId = car.id,
+    orderId = orderId
 )
 
 fun DocumentSnapshot.toBookingDto(): BookingDto? {
@@ -74,6 +77,7 @@ fun DocumentSnapshot.toBookingDto(): BookingDto? {
         val totalAmount = getLong(FS_FIELD_TOTAL_AMOUNT)!!
         val paidAmount = getLong(FS_FIELD_PAID_AMOUNT)!!
         val carId = getString(FS_FIELD_CAR_ID)!!
+        val orderId = getString(FS_FIELD_ORDER_ID)!!
 
         BookingDto(
             id = id,
@@ -87,7 +91,8 @@ fun DocumentSnapshot.toBookingDto(): BookingDto? {
             oneWay = oneWay,
             totalAmount = totalAmount,
             paidAmount = paidAmount,
-            carId = carId
+            carId = carId,
+            orderId = orderId
         )
     } catch (e: Exception){
         null

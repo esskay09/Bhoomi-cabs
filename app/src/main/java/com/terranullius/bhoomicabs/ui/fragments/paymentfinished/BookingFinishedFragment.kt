@@ -1,4 +1,4 @@
-package com.terranullius.bhoomicabs.ui.fragments.newbooking
+package com.terranullius.bhoomicabs.ui.fragments.paymentfinished
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,7 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.terranullius.bhoomicabs.R
 import com.terranullius.bhoomicabs.ui.composables.MyApp
 import com.terranullius.bhoomicabs.ui.fragments.BaseFragment
-import com.terranullius.bhoomicabs.ui.fragments.newbooking.composables.BookingFinishedScreen
+import com.terranullius.bhoomicabs.ui.fragments.paymentfinished.composables.BookingFinishedScreen
 import com.terranullius.bhoomicabs.ui.viewmodels.NewBookingViewModel
 import com.terranullius.bhoomicabs.util.NavigationEvent
 

@@ -173,7 +173,11 @@ class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
     override fun onPaymentSuccess(razorpayPaymentId: String?, data: PaymentData?) {
         data?.let { paymentData ->
             val orderId = paymentData.orderId
+            val amount = paymentData.data.getString("amount")
 
+            Log.d("shit", "paid amount: $amount")
+
+            viewModel.updatePayment(orderId, amount)
         }
     }
 

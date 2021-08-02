@@ -12,6 +12,7 @@ data class Booking(
     val startDate: String,
     val endDate: String,
     val totalAmount: Long,
-    val paidAmount: Long,
-    val car: Car
+    var paidAmount: Long,
+    val car: Car,
+    val orderId: String = ""
 )

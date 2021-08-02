@@ -1,4 +1,4 @@
-package com.terranullius.bhoomicabs.ui.fragments.newbooking.composables
+package com.terranullius.bhoomicabs.ui.fragments.paymentfinished.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
