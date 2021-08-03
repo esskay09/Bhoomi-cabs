@@ -37,6 +37,7 @@ import java.lang.Exception
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
+
     private val viewModel: MainViewModel by viewModels()
     private lateinit var checkout: Checkout
     private lateinit var navController: NavController
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity(), PaymentResultWithDataListener {
 
         try {
             val options = JSONObject()
-            options.put("name", "Esskay")
+            options.put("name", "Bhoomi cabs")
             options.put("description", "Reference No. #123456")
             options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
             options.put("order_id", orderId) //from response of step 3.

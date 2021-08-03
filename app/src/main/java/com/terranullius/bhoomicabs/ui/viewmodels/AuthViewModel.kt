@@ -105,6 +105,9 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
         }*/
     }
 
+    fun showNumbersHint() {
+        repository.showNumbersHint()
+    }
 
 
 }

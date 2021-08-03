@@ -15,7 +15,6 @@ sealed class NavigationEvent {
     object SplashToLogin: NavigationEvent()
     object SplashToBookings: NavigationEvent()
 
-    object SelectPaymentToBookingFinished: NavigationEvent()
 
     object BoookingFinishedToBookings: NavigationEvent()
 

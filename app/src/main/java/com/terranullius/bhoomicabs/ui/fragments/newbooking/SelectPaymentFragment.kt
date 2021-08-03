@@ -16,6 +16,7 @@ import com.terranullius.bhoomicabs.ui.fragments.BaseFragment
 import com.terranullius.bhoomicabs.ui.viewmodels.NewBookingViewModel
 import com.terranullius.bhoomicabs.util.NavigationEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 @AndroidEntryPoint
@@ -25,11 +26,10 @@ class SelectPaymentFragment : BaseFragment() {
     override fun initViewModel() = viewModel
 
     override fun onNavigate(navigationEvent: NavigationEvent) {
-        when(navigationEvent){
-            is NavigationEvent.SelectPaymentToBookingFinished -> findNavController().navigate(R.id.action_selectPaymentFragment_to_bookingFinishedFragment)
-        }
+
     }
 
+    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
