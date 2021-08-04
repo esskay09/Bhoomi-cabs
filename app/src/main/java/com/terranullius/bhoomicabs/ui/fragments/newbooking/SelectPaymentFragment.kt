@@ -41,6 +41,7 @@ class SelectPaymentFragment : BaseFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         view.apply {
+
             setContent {
                 MyApp() {
                     SelectPaymentScreen(Modifier.fillMaxSize(), viewModel = viewModel)
