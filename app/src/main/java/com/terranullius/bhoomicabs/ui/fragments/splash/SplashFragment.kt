@@ -1,4 +1,4 @@
-package com.terranullius.bhoomicabs.ui.fragments
+package com.terranullius.bhoomicabs.ui.fragments.splash
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,7 @@ import com.terranullius.bhoomicabs.R
 import com.terranullius.bhoomicabs.other.Constants.PREFS_DIR
 import com.terranullius.bhoomicabs.other.Constants.PREF_NUMBER
 import com.terranullius.bhoomicabs.other.Constants.PREF_VERIFIED
+import com.terranullius.bhoomicabs.ui.fragments.BaseFragment
 import com.terranullius.bhoomicabs.ui.viewmodels.AuthViewModel
 import com.terranullius.bhoomicabs.util.NavigationEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,3 +72,4 @@ class SplashFragment : BaseFragment() {
 
     }
 }
+
