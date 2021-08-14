@@ -49,7 +49,7 @@ class BookingsFragment: BaseFragment(){
         view.apply {
             setContent {
                 MyApp{
-                        BookingsScreen(modifier = Modifier.fillMaxSize(), viewModel = viewModel)
+                    BookingsScreen(modifier = Modifier.fillMaxSize(), viewModel = viewModel)
                 }
             }
         }

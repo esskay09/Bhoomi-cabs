@@ -43,12 +43,12 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
         onVerificationStarted()
 
-        //TODO UNCOMMENT AND REMOVE
-        _phoneNumberSetEvent.value = Event(Resource.Success(number))
+
+//        _phoneNumberSetEvent.value = Event(Resource.Success(number))
 
         setNumber(number)
 
-   /*     PickCabApi.retrofitService.startVerification(number).observeForever {
+        PickCabApi.retrofitService.startVerification(number).observeForever {
 
             Log.d("fuck", "start verification response : $it")
 
@@ -66,7 +66,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
                     _phoneNumberSetEvent.value = Event(Resource.Error(Exception()))
                 }
             }
-        }*/
+        }
 
     }
 
@@ -78,10 +78,10 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
 
         _otpSetEvent.value = Event(Resource.Loading)
 
-        //TODO REMOVE AND UNCOMMENT
-        _otpSetEvent.value = Event(Resource.Success(phoneNumberStateFlow.value))
 
-  /*      PickCabApi.retrofitService.verifyOtp(phoneNumberStateFlow.value, otp).observeForever {
+//        _otpSetEvent.value = Event(Resource.Success(phoneNumberStateFlow.value))
+
+        PickCabApi.retrofitService.verifyOtp(phoneNumberStateFlow.value, otp).observeForever {
 
             when (it) {
                 is ApiSuccessResponse -> {
@@ -102,7 +102,7 @@ class AuthViewModel @Inject constructor(val repository: MainRepository) : BaseVi
                 }
 
             }
-        }*/
+        }
     }
 
     fun showNumbersHint() {

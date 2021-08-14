@@ -6,6 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -14,7 +18,10 @@ import com.terranullius.bhoomicabs.R
 import com.terranullius.bhoomicabs.other.Constants.PREFS_DIR
 import com.terranullius.bhoomicabs.other.Constants.PREF_NUMBER
 import com.terranullius.bhoomicabs.other.Constants.PREF_VERIFIED
+import com.terranullius.bhoomicabs.ui.composables.MyApp
 import com.terranullius.bhoomicabs.ui.fragments.BaseFragment
+import com.terranullius.bhoomicabs.ui.fragments.newbooking.composables.NewBookingScreen
+import com.terranullius.bhoomicabs.ui.fragments.splash.composables.SplashScreen
 import com.terranullius.bhoomicabs.ui.viewmodels.AuthViewModel
 import com.terranullius.bhoomicabs.util.NavigationEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,12 +33,25 @@ class SplashFragment : BaseFragment() {
 
     private val viewModel: AuthViewModel by hiltNavGraphViewModels(R.id.navGraph_auth)
 
+    @ExperimentalAnimationApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_splash, container, false)
+        val view = ComposeView(requireContext())
+        view.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        view.apply {
+            setContent {
+                MyApp {
+                    SplashScreen(Modifier.fillMaxSize())
+                }
+            }
+        }
+        return view
     }
 
     private var isVerified = false
